@@ -1,0 +1,10 @@
+.box {
+    position: absolute;
+    left: var(--mantine-spacing-lg);
+    top: var(--mantine-spacing-lg);
+    border-radius: var(--mantine-radius-md);
+    padding: 4px;
+    background-color: var(--mantine-color-dark-6);
+    display: flex;
+}
+
