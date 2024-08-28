@@ -6,9 +6,15 @@ import '@mantine/notifications/styles.css';
 import './App.css'
 
 import './config/i18n.ts'
-import Map from "./components/map/Map.tsx";
-import Sidebar from "./components/sidebar/Sidebar.tsx";
-import TypesModal from "./components/modals/types/TypesModal.tsx";
+import './config/axios.ts'
+
+import MapView from "./components/map/MapView.tsx";
+import TypesModal from "./components/modals/library/LibraryModal.tsx";
+import LoginModal from "./components/modals/login/LoginModal.tsx";
+import {Notifications} from "@mantine/notifications";
+import {Ui} from "./components/ui/Ui.tsx";
+import AddSiteModal from "./components/modals/site/AddSiteModal.tsx";
+import {MapProvider} from "react-map-gl/maplibre";
 
 const theme = createTheme({
     colors: {
@@ -36,9 +42,14 @@ function App() {
             theme={theme}
             forceColorScheme={'dark'}
         >
-            <Map/>
-            <Sidebar/>
-            <TypesModal/>
+            <Notifications position={"top-center"}/>
+            <MapProvider>
+                <MapView/>
+                <Ui/>
+                <TypesModal/>
+                <LoginModal/>
+                <AddSiteModal/>
+            </MapProvider>
         </MantineProvider>
     )
 }

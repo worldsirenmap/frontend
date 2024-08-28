@@ -13,7 +13,7 @@ await i18n
         resources: {
             en: {
                 header: {
-                    btn_types: 'Siren types',
+                    btn_types: 'Siren library',
                     btn_manufacturers: 'Siren manufacturers',
                     btn_addsite: 'Add siren site',
                 }

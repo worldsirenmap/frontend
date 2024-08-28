@@ -1,0 +1,20 @@
+.sidebarButton {
+    position: absolute;
+    left: var(--mantine-spacing-lg);
+    top: var(--mantine-spacing-lg);
+    border-radius: var(--mantine-radius-md);
+    padding: 6px;
+    background-color: var(--mantine-color-dark-6);
+    display: flex;
+}
+
+.actionButton {
+    position: absolute;
+    right: var(--mantine-spacing-lg);
+    bottom: var(--mantine-spacing-lg);
+    border-radius: 50%;
+    padding: 6px;
+    background-color: var(--mantine-color-dark-6);
+    display: flex;
+}
+
