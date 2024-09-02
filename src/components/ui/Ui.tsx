@@ -2,11 +2,12 @@ import Sidebar from "./sidebar/Sidebar.tsx";
 import {ActionIcon, Box} from "@mantine/core";
 import classes from "./Ui.module.css";
 import {IconMenu2, IconPlus} from "@tabler/icons-react";
-import {useModalAtom, useUserAtom} from "../../config/atoms.ts";
+import {useModalAtom, useSidebarAtom, useUserAtom} from "../../config/atoms.ts";
 import {notifications} from '@mantine/notifications';
 
 export const Ui = () => {
     const {openModal} = useModalAtom()
+    const {openSidebar} = useSidebarAtom()
     const {isUserLoggedIn} = useUserAtom()
 
     const actionButtonClicked = () => {
@@ -27,8 +28,8 @@ export const Ui = () => {
     return (
         <>
             <Box className={classes.sidebarButton}>
-                <ActionIcon radius={'sm'} size={48} onClick={() => openModal("sidebar")}>
-                    <IconMenu2 size={32} />
+                <ActionIcon radius={'sm'} size={48} onClick={() => openSidebar()}>
+                    <IconMenu2 size={32}/>
                     {/*<IconFilterFilled size={32}/>*/}
                 </ActionIcon>
             </Box>

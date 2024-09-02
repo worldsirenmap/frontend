@@ -9,6 +9,7 @@ import {
 } from "@tabler/icons-react";
 import Modal from "../Modal.tsx";
 import ModelPanel from "./ModelPanel.tsx";
+import ManufacturerPanel from "./ManufacturerPanel.tsx";
 
 export default () => {
     return (
@@ -37,7 +38,7 @@ export default () => {
                     <ModelPanel/>
                 </Tabs.Panel>
                 <Tabs.Panel value={'manufacturer'}>
-                    asdf
+                    <ManufacturerPanel/>
                 </Tabs.Panel>
             </Tabs>
         </Modal>

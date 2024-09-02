@@ -21,7 +21,90 @@ export const useUserAtom = () => {
         })
     }
 }
+// ---------- LibraryAtom ----------
+export type LibraryTag = string
+export type LibraryModel = {
+    id: number
+    shortname: string
+    manufacturer: string
+    category: string
+    icon: string
+}
+export type LibraryManufacturer = {
+    id: number
+    shortname: string
+}
+export type Library = {
+    tags: LibraryTag[]
+    models: LibraryModel[]
+    manufacturers: LibraryManufacturer[]
+}
+const initialLibraryState: Library = {
+    tags: [],
+    models: [],
+    manufacturers: []
+}
+const libraryAtom = atom<Library>(initialLibraryState)
+export const useLibraryAtom = () => {
+    const [library, setLibrary] = useAtom(libraryAtom)
+    return {
+        tags: library.tags,
+        models: library.models,
+        manufacturers: library.manufacturers,
+        setTags: (tags: LibraryTag[]) => setLibrary(current => ({...current, tags})),
+        setModels: (models: LibraryModel[]) => setLibrary(current => ({...current, models})),
+        setManufacturers: (manufacturers: LibraryModel[]) => setLibrary(current => ({...current, manufacturers})),
+    }
+}
 
+// ---------- FilterAtom ----------
+export type MapFilter = {
+    tag: string[]
+    mod: number[]
+    man: number[]
+    cat: string[]
+    con: string[]
+}
+
+export const emptyMapFilter: MapFilter = {
+    tag: [],
+    mod: [],
+    man: [],
+    cat: [],
+    con: []
+}
+const mapFilterAtom = atomWithStorage<MapFilter>('mapFilter', emptyMapFilter, createJSONStorage(), {getOnInit: true})
+export const useMapFilterAtom = () => {
+    const [mapFilter, setMapFilter] = useAtom(mapFilterAtom)
+    return {
+        isFilterActive: mapFilter.tag.length || mapFilter.mod.length || mapFilter.man.length || mapFilter.cat.length || mapFilter.con.length,
+        mapFilter,
+        setMapFilter,
+        resetMapFilter: () => setMapFilter(emptyMapFilter)
+    }
+}
+
+export const mapFilter2JsonQuery = (mapFilter: MapFilter): string => {
+    const urlParams = []
+    if (mapFilter.tag.length > 0) urlParams.push("tag=[" + mapFilter.tag.map(x => '"' + x + '"').join() + "]")
+    if (mapFilter.mod.length > 0) urlParams.push("mod=[" + mapFilter.mod.join() + "]")
+    if (mapFilter.man.length > 0) urlParams.push("man=[" + mapFilter.man.join() + "]")
+    if (mapFilter.cat.length > 0) urlParams.push("cat=[" + mapFilter.cat.map(x => '"' + x + '"').join() + "]")
+    if (mapFilter.con.length > 0) urlParams.push("con=[" + mapFilter.con.map(x => '"' + x + '"').join() + "]")
+    return urlParams.length == 0 ? "" : "?" + urlParams.join('&')
+}
+
+export const mapFilter2QueryString = (mapFilter: MapFilter): string => {
+    const urlParams = []
+    if (mapFilter.tag.length > 0) urlParams.push("tag=" + mapFilter.tag.join())
+    if (mapFilter.mod.length > 0) urlParams.push("mod=" + mapFilter.mod.join())
+    if (mapFilter.man.length > 0) urlParams.push("man=" + mapFilter.man.join())
+    if (mapFilter.cat.length > 0) urlParams.push("cat=" + mapFilter.cat.join())
+    if (mapFilter.con.length > 0) urlParams.push("con=" + mapFilter.con.join())
+    return urlParams.length == 0 ? "" : "?" + urlParams.join('&')
+}
+
+// ---------- ShowModalAtom ----------
 const showModalAtom = atom("")
 export const useModalAtom = () => {
     const [showModal, setShowModal] = useAtom(showModalAtom)
@@ -31,6 +114,18 @@ export const useModalAtom = () => {
         closeModal: () => setShowModal("")
     }
 }
+
+// ---------- SideBarState ----------
+const showSidebarAtom = atomWithStorage<boolean>('sidebarState', false, createJSONStorage(), {getOnInit: true})
+export const useSidebarAtom = () => {
+    const [showSidebar, setShowSidebar] = useAtom(showSidebarAtom)
+    return {
+        isSidebarOpen: showSidebar,
+        openSidebar: () => setShowSidebar(true),
+        closeSidebar: () => setShowSidebar(false)
+    }
+}
+
 // ---------- MapViewState ----------
 const initialViewState: ViewState = {
     bearing: 0,

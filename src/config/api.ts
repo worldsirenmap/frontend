@@ -36,12 +36,12 @@ export type NearbySite = {
     },
     distance: number,
     icon: string,
-    installations: [{
+    sirens: [{
         manufacturer: string,
         model: string,
         category: string,
         icon: string,
-        status: string
+        condition: string
     }]
 }
 

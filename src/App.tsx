@@ -15,6 +15,13 @@ import {Notifications} from "@mantine/notifications";
 import {Ui} from "./components/ui/Ui.tsx";
 import AddSiteModal from "./components/modals/site/AddSiteModal.tsx";
 import {MapProvider} from "react-map-gl/maplibre";
+import MessagesModal from "./components/modals/messages/MessagesModal.tsx";
+import InfoModal from "./components/modals/info/InfoModal.tsx";
+import FilterModal from "./components/modals/filter/FilterModal.tsx";
+import {useLibraryAtom} from "./config/atoms.ts";
+import {useEffect} from "react";
+import {axios} from "./config/axios.ts";
+
 
 const theme = createTheme({
     colors: {
@@ -37,6 +44,14 @@ const theme = createTheme({
 });
 
 function App() {
+    const {setTags, setModels, setManufacturers} = useLibraryAtom()
+
+    useEffect(() => {
+        axios.get("/public/library/tags").then(res => setTags(res.data))
+        axios.get("/public/library/models").then(res => setModels(res.data))
+        axios.get("/public/library/manufacturers").then(res => setManufacturers(res.data))
+    }, [])
+
     return (
         <MantineProvider
             theme={theme}
@@ -49,6 +64,9 @@ function App() {
                 <TypesModal/>
                 <LoginModal/>
                 <AddSiteModal/>
+                <MessagesModal/>
+                <InfoModal/>
+                <FilterModal/>
             </MapProvider>
         </MantineProvider>
     )

@@ -6,12 +6,20 @@ import Map, {
     NavigationControl,
     Popup,
     Source,
+    VectorTileSource,
     ViewStateChangeEvent
 } from 'react-map-gl/maplibre';
 
 import 'maplibre-gl/dist/maplibre-gl.css';
-import {useCallback, useMemo, useRef, useState} from 'react';
-import {useHoveredState, useMarkerState, useViewState} from '../../config/atoms.ts';
+import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {
+    mapFilter2JsonQuery,
+    mapFilter2QueryString,
+    useHoveredState,
+    useMapFilterAtom,
+    useMarkerState,
+    useViewState
+} from '../../config/atoms.ts';
 import {
     createHoveredState,
     createLockedMarkerState,
@@ -43,6 +51,7 @@ export default () => {
     const [viewState, setViewState] = useViewState()
     const [markerState, setMarkerState] = useMarkerState()
     const [hoveredState, setHoveredState] = useHoveredState()
+    const {mapFilter} = useMapFilterAtom()
 
     const [popupState, setPopupState] = useState<PopupState | null>(null)
     const [localMarkerState, setLocalMarkerState] = useState<LocalMarkerState | null>(null)
@@ -58,6 +67,24 @@ export default () => {
     const hoveredSourceData = useMemo(() => hoveredState ? hoveredFeatureCollection(hoveredState) : emptyFeatureCollection(), [hoveredState])
     const lineSourceData = useMemo(() => hoveredState ? lineFeatureCollection(hoveredState, markerState, localMarkerState) : emptyFeatureCollection(), [hoveredState, markerState, localMarkerState])
     const tooltipState = useMemo(() => hoveredState ? createTooltipState(hoveredState, markerState, localMarkerState) : null, [hoveredState, markerState, localMarkerState])
+
+    useEffect(() => {
+        addFilterToSource()
+    }, [mapFilter])
+
+    const addFilterToSource = () => {
+        if (mapRef.current) {
+            const sirenmapSource = (mapRef.current?.getSource('sirenmap') as VectorTileSource)
+            if (sirenmapSource) {
+                const baseUrl = sirenmapSource?.url.split("?")[0]
+                sirenmapSource.setUrl(baseUrl + mapFilter2JsonQuery(mapFilter))
+            }
+        }
+    }
+
+    const mapOnLoad = useCallback(() => {
+        addFilterToSource()
+    },[])
 
     const mapOnMove = useCallback((e: ViewStateChangeEvent) => {
         setViewState(e.viewState)
@@ -188,6 +215,7 @@ export default () => {
             onMouseDown={mapOnMouseDown}
             onMouseMove={mapOnMouseMove}
             onMouseLeave={mapOnMouseLeave}
+            onLoad={mapOnLoad}
         >
             <NavigationControl position='top-right'/>
             <Source id={'line'} type={'geojson'} data={lineSourceData}>
@@ -214,6 +242,7 @@ export default () => {
                         {(popupState.context == PopupContext.MAP || popupState.context == PopupContext.MARKER) && (
                             <>
                                 <Button
+                                    disabled={viewState.zoom < 17}
                                     variant="filled"
                                     size={'sm'}
                                     color={'wsm'}

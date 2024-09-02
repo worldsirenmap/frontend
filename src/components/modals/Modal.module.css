@@ -6,7 +6,7 @@
     &:last-child {
         border: none;
     }
-    &:hover {
+    &:hover, &[data-active] {
         background-color: var(--mantine-primary-color-light);
         color: #fff;
     }
