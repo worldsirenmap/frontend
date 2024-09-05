@@ -18,9 +18,9 @@ import {MapProvider} from "react-map-gl/maplibre";
 import MessagesModal from "./components/modals/messages/MessagesModal.tsx";
 import InfoModal from "./components/modals/info/InfoModal.tsx";
 import FilterModal from "./components/modals/filter/FilterModal.tsx";
-import {useLibraryAtom} from "./config/atoms.ts";
+
 import {useEffect} from "react";
-import {axios} from "./config/axios.ts";
+import {useMapFilter} from "./config/mapFilter.ts";
 
 
 const theme = createTheme({
@@ -44,12 +44,10 @@ const theme = createTheme({
 });
 
 function App() {
-    const {setTags, setModels, setManufacturers} = useLibraryAtom()
+    const {loadFilterData} = useMapFilter()
 
     useEffect(() => {
-        axios.get("/public/library/tags").then(res => setTags(res.data))
-        axios.get("/public/library/models").then(res => setModels(res.data))
-        axios.get("/public/library/manufacturers").then(res => setManufacturers(res.data))
+        loadFilterData()
     }, [])
 
     return (

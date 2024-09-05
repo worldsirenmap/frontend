@@ -30,10 +30,8 @@ export const useLogoutApi = () => {
 
 export type NearbySite = {
     id: number
-    coordinates: {
-        longitude: number,
-        latitude: number,
-    },
+    longitude: number,
+    latitude: number,
     distance: number,
     icon: string,
     sirens: [{
@@ -51,4 +49,9 @@ export type Model = {
     manufacturer: string
     category: string
     icon: string
+}
+
+export type Manufacturer = {
+    id: number
+    shortname: string
 }

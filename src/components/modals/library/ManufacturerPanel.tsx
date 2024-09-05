@@ -1,13 +1,13 @@
 import {Stack, Text} from "@mantine/core";
-import {useLibraryAtom} from "../../../config/atoms.ts";
 import ListDetailsPanel from "../ListDetailsPanel.tsx";
 import ListItem from "../ListItem.tsx";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import ManufacturerDetails from "./ManufacturerDetails.tsx";
+import {Manufacturer} from "../../../config/api.ts";
 
 export default () => {
-    const {manufacturers} = useLibraryAtom()
     const [selected, setSelected] = useState<number | null>(null)
+    const manufacturers: Manufacturer[] = useMemo(()=>([]),[])
 
     useEffect(() => {
         setSelected(manufacturers[0]?.id)

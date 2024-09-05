@@ -13,7 +13,7 @@ const availableStatus = {
         color: 'red.9',
         label: 'Defekt'
     },
-    S: {
+    R: {
         color: 'dark.9',
         label: 'Demontiert'
     }

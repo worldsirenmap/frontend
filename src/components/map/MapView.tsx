@@ -12,14 +12,7 @@ import Map, {
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {
-    mapFilter2JsonQuery,
-    mapFilter2QueryString,
-    useHoveredState,
-    useMapFilterAtom,
-    useMarkerState,
-    useViewState
-} from '../../config/atoms.ts';
+import {useHoveredState, useMarkerState, useViewState} from '../../config/atoms.ts';
 import {
     createHoveredState,
     createLockedMarkerState,
@@ -44,6 +37,7 @@ import {
 } from './mapUtils.ts';
 import {CircleLayer, LineLayer, SymbolLayer} from "react-map-gl";
 import {MapGeoJSONFeature} from "maplibre-gl";
+import {mapFilter2JsonQuery, useMapFilter} from "../../config/mapFilter.ts";
 
 export default () => {
     const mapRef = useRef<MapRef | null>(null)
@@ -51,7 +45,7 @@ export default () => {
     const [viewState, setViewState] = useViewState()
     const [markerState, setMarkerState] = useMarkerState()
     const [hoveredState, setHoveredState] = useHoveredState()
-    const {mapFilter} = useMapFilterAtom()
+    const {currentFilter} = useMapFilter()
 
     const [popupState, setPopupState] = useState<PopupState | null>(null)
     const [localMarkerState, setLocalMarkerState] = useState<LocalMarkerState | null>(null)
@@ -70,21 +64,21 @@ export default () => {
 
     useEffect(() => {
         addFilterToSource()
-    }, [mapFilter])
+    }, [currentFilter])
 
     const addFilterToSource = () => {
         if (mapRef.current) {
             const sirenmapSource = (mapRef.current?.getSource('sirenmap') as VectorTileSource)
             if (sirenmapSource) {
                 const baseUrl = sirenmapSource?.url.split("?")[0]
-                sirenmapSource.setUrl(baseUrl + mapFilter2JsonQuery(mapFilter))
+                sirenmapSource.setUrl(baseUrl + mapFilter2JsonQuery(currentFilter))
             }
         }
     }
 
     const mapOnLoad = useCallback(() => {
         addFilterToSource()
-    },[])
+    }, [])
 
     const mapOnMove = useCallback((e: ViewStateChangeEvent) => {
         setViewState(e.viewState)

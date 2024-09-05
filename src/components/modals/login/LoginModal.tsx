@@ -14,7 +14,7 @@ export default () => {
     const loginForm = useForm({
         mode: 'uncontrolled',
         initialValues: {
-            loginToken: '',
+            token: '',
             password: ''
         }
     });
@@ -62,8 +62,8 @@ export default () => {
                     <TextInput
                         required
                         placeholder="Username or email"
-                        {...loginForm.getInputProps('loginToken')}
-                        key={loginForm.key('loginToken')}
+                        {...loginForm.getInputProps('token')}
+                        key={loginForm.key('token')}
                         disabled={loginPending}
                     />
                     <PasswordInput

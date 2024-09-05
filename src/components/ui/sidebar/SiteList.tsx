@@ -3,17 +3,12 @@ import classes from "./Sidebar.module.css";
 import {useMap} from "react-map-gl/maplibre";
 import {formatDistanceEU} from "../../map/mapUtils.ts";
 import useAxios from "axios-hooks";
-import {
-    mapFilter2QueryString,
-    useHoveredState,
-    useLoading,
-    useMapFilterAtom,
-    useMarkerState
-} from "../../../config/atoms.ts";
+import {useHoveredState, useLoading, useMarkerState} from "../../../config/atoms.ts";
 import {NearbySite} from "../../../config/api.ts";
 import {useEffect, useRef, useState} from "react";
 import {IconMoodWrrrFilled} from "@tabler/icons-react";
 import StatusBadge from "../StatusBadge.tsx";
+import {mapFilter2QueryString, useMapFilter} from "../../../config/mapFilter.ts";
 
 
 export default () => {
@@ -22,11 +17,11 @@ export default () => {
     const [markerState] = useMarkerState()
     const [hoveredState, setHoveredState] = useHoveredState()
     const [scrollInto, setScrollInto] = useState<boolean>(true)
-    const {mapFilter} = useMapFilterAtom()
+    const {currentFilter} = useMapFilter()
     const [_, setLoading] = useLoading()
 
     const [{data, error, loading}] = useAxios<NearbySite[]>({
-        url: "/public/sites/nearby" + mapFilter2QueryString(mapFilter),
+        url: "/public/sites/nearby" + mapFilter2QueryString(currentFilter),
         params: {
             longitude: markerState.longitude,
             latitude: markerState.latitude,
@@ -68,9 +63,9 @@ export default () => {
                     onMouseEnter={() => {
                         setHoveredState({
                             id: site.id,
-                            icon: site.icon,
-                            longitude: site.coordinates.longitude,
-                            latitude: site.coordinates.latitude,
+                            icon: site.sirens.length > 1 ? 'multi' + site.sirens.length : site.sirens[0].icon,
+                            longitude: site.longitude,
+                            latitude: site.latitude,
                         })
                         setScrollInto(false)
                     }}
@@ -81,8 +76,8 @@ export default () => {
                     onClick={() => {
                         map!.flyTo({
                             center: {
-                                lng: site.coordinates.longitude,
-                                lat: site.coordinates.latitude
+                                lng: site.longitude,
+                                lat: site.latitude
                             }
                         })
                     }}>

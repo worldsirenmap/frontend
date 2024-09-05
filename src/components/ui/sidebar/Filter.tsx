@@ -1,33 +1,61 @@
 import {useForm} from "@mantine/form";
-import {
-    emptyMapFilter,
-    MapFilter,
-    mapFilter2QueryString,
-    useLibraryAtom,
-    useMapFilterAtom
-} from "../../../config/atoms.ts";
-import {Button, Divider, Loader, MultiSelect, Stack} from "@mantine/core";
+import {Button, Divider, Loader, MultiSelect, Select, Stack} from "@mantine/core";
 import {useEffect, useState} from "react";
 import {axios} from "../../../config/axios.ts";
+import {emptyMapFilter, MapFilter, mapFilter2QueryString, useMapFilter} from "../../../config/mapFilter.ts";
 
 
 export default () => {
-    const {mapFilter, setMapFilter, resetMapFilter, isFilterActive} = useMapFilterAtom()
-    const {tags, models, manufacturers} = useLibraryAtom()
-    const [isDirty, setDirty] = useState<boolean>(false);
-    const [count, setCount] = useState<number>(0);
+    const {
+        currentFilter,
+        filterData,
+        setCurrentFilter,
+        resetCurrentFilter,
+        isMapFilterActive,
+        loadStateData,
+        loadCountyData,
+        unloadStateData,
+        unloadCountyData,
+        statesLoading,
+        countiesLoading
+    } = useMapFilter()
+    const [isDirty, setDirty] = useState<boolean>(false)
+    const [count, setCount] = useState<number>(0)
 
     const form = useForm<MapFilter>({
-        initialValues: mapFilter,
+        initialValues: currentFilter,
 
-        onValuesChange: values => {
+        onValuesChange: (values, previous) => {
+            if (values.ctr) {
+                if (values.ctr != previous.ctr) {
+                    loadStateData(values.ctr)
+                    unloadCountyData()
+                    values.sta = null
+                    values.cty = null
+                }
+                if (values.sta) {
+                    if (values.sta != previous.sta) {
+                        loadCountyData(values.ctr, values.sta)
+                        values.cty = null
+                    }
+                } else if (previous.sta) {
+                    unloadCountyData()
+                    values.cty = null
+                }
+            } else if (previous.ctr) {
+                unloadStateData()
+                unloadCountyData()
+                values.sta = null
+                values.cty = null
+            }
+
             countSirens(values)
         }
     });
 
     useEffect(() => {
-        countSirens(mapFilter)
-    }, [mapFilter]);
+        countSirens(currentFilter)
+    }, [currentFilter]);
 
     const countSirens = (values: MapFilter) => {
         setDirty(true)
@@ -37,12 +65,12 @@ export default () => {
     }
 
     const setFilter = (values: MapFilter) => {
-        setMapFilter(values)
+        setCurrentFilter(values)
         form.resetDirty()
     }
 
     const resetFilter = () => {
-        resetMapFilter()
+        resetCurrentFilter()
         form.setValues(emptyMapFilter)
         form.resetDirty()
     }
@@ -51,16 +79,38 @@ export default () => {
         <form onSubmit={form.onSubmit(setFilter)} style={{flex: '1 1 auto'}}>
             <Stack p={20}>
                 <Divider label={"Location"}/>
-                <MultiSelect
+                <Select
+                    {...form.getInputProps('ctr')}
+                    key={form.key('ctr')}
                     placeholder="Country"
-                    disabled />
-                <MultiSelect
+                    clearable={true}
+                    searchable={true}
+                    data={filterData.ctr}
+                    disabled={filterData.ctr.length == 0}
+                    leftSection={filterData.ctr.length == 0 ? <Loader size={'xs'} type={'dots'}/> : null}
+                />
+                <Select
+                    {...form.getInputProps('sta')}
+                    key={form.key('sta')}
                     placeholder="State"
-                    disabled />
-                <MultiSelect
+                    clearable={true}
+                    searchable={true}
+                    data={filterData.sta}
+                    disabled={filterData.sta.length == 0}
+                    leftSection={statesLoading? <Loader size={'xs'} type={'dots'}/> : null}
+                />
+                <Select
+                    {...form.getInputProps('cty')}
+                    key={form.key('cty')}
                     placeholder="County"
-                    disabled />
+                    clearable={true}
+                    searchable={true}
+                    data={filterData.cty}
+                    disabled={filterData.cty.length == 0}
+                    leftSection={countiesLoading? <Loader size={'xs'} type={'dots'}/> : null}
+                />
                 <Divider label={"Siren"}/>
+
                 <MultiSelect
                     {...form.getInputProps('mod')}
                     key={form.key('mod')}
@@ -68,14 +118,10 @@ export default () => {
                     clearable={true}
                     searchable={true}
                     hidePickedOptions
-                    data={models.map(model => ({
-                        value: model.id.toString(),
-                        label: model.shortname
-                    }))}
-                    limit={10}
+                    data={filterData.mod}
                     maxValues={10}
-                    disabled={models.length == 0}
-                    leftSection={models.length == 0 ? <Loader size={'xs'} type={'dots'} /> : null}
+                    disabled={filterData.mod.length == 0}
+                    leftSection={filterData.mod.length == 0 ? <Loader size={'xs'} type={'dots'}/> : null}
                 />
                 <MultiSelect
                     {...form.getInputProps('man')}
@@ -84,27 +130,10 @@ export default () => {
                     clearable={true}
                     searchable={true}
                     hidePickedOptions
-                    data={manufacturers.map(manufacturer => ({
-                        value: manufacturer.id.toString(),
-                        label: manufacturer.shortname
-                    }))}
-                    limit={10}
+                    data={filterData.man}
                     maxValues={10}
-                    disabled={manufacturers.length == 0}
-                    leftSection={manufacturers.length == 0 ? <Loader size={'xs'} type={'dots'} /> : null}
-                />
-                <MultiSelect
-                    {...form.getInputProps('tag')}
-                    key={form.key('tag')}
-                    placeholder="Tags"
-                    clearable={true}
-                    searchable={true}
-                    hidePickedOptions
-                    data={tags}
-                    limit={10}
-                    maxValues={10}
-                    disabled={tags.length == 0}
-                    leftSection={tags.length == 0 ? <Loader size={'xs'} type={'dots'} /> : null}
+                    disabled={filterData.man.length == 0}
+                    leftSection={filterData.man.length == 0 ? <Loader size={'xs'} type={'dots'}/> : null}
                 />
                 <MultiSelect
                     {...form.getInputProps('cat')}
@@ -113,17 +142,10 @@ export default () => {
                     clearable={true}
                     searchable={true}
                     hidePickedOptions
-                    data={[
-                        {value: "E", label: "Electronic"},
-                        {value: "MH", label: "Mechanical (Handoperated)"},
-                        {value: "MM", label: "Mechanical (Motorized)"},
-                        {value: "ME", label: "Mechanical (Electircal)"},
-                        {value: "PC", label: "Pneumatic (Compressor)"},
-                        {value: "PB", label: "Pneumatic (Blower)"},
-                        {value: "T", label: "Typhoon"},
-                        {value: "U", label: "Unknown"},
-                    ]}
+                    data={filterData.cat}
                     maxValues={10}
+                    disabled={filterData.cat.length == 0}
+                    leftSection={filterData.cat.length == 0 ? <Loader size={'xs'} type={'dots'}/> : null}
                 />
                 <MultiSelect
                     {...form.getInputProps('con')}
@@ -132,20 +154,28 @@ export default () => {
                     clearable={true}
                     searchable={true}
                     hidePickedOptions
-                    data={[
-                        {value: "A", label: "Active"},
-                        {value: "I", label: "Inactive"},
-                        {value: "D", label: "Defect"},
-                        {value: "S", label: "Removed"},
-                        {value: "U", label: "Unknown"},
-                    ]}
+                    data={filterData.con}
                     maxValues={10}
+                    disabled={filterData.con.length == 0}
+                    leftSection={filterData.con.length == 0 ? <Loader size={'xs'} type={'dots'}/> : null}
                 />
-                <Divider my={5} />
+                <MultiSelect
+                    {...form.getInputProps('tag')}
+                    key={form.key('tag')}
+                    placeholder="Tags"
+                    clearable={true}
+                    searchable={true}
+                    hidePickedOptions
+                    data={filterData.tag}
+                    maxValues={10}
+                    disabled={filterData.tag.length == 0}
+                    leftSection={filterData.tag.length == 0 ? <Loader size={'xs'} type={'dots'}/> : null}
+                />
+                <Divider my={5}/>
                 <Button
                     disabled={!form.isDirty() || isDirty || count == 0}
                     type={'submit'}>{count == 0 ? "Nothing found" : (form.isDirty() ? "Show " : "Showing ") + count + " sirens"}</Button>
-                <Button disabled={!isFilterActive} variant={'outline'} color={'red.6'} onClick={resetFilter}>Clear
+                <Button disabled={!isMapFilterActive} variant={'outline'} color={'red.6'} onClick={resetFilter}>Clear
                     Filter</Button>
             </Stack>
         </form>

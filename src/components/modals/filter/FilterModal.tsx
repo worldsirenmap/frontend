@@ -1,14 +1,6 @@
-import {
-    IconBrandGithub,
-    IconFilter,
-    IconFilterHeart,
-    IconFilterStar,
-    IconInfoCircle,
-    IconMail
-} from "@tabler/icons-react";
+import {IconFilter, IconFilterHeart, IconFilterStar} from "@tabler/icons-react";
 import Modal from "../Modal.tsx";
 import {Tabs} from "@mantine/core";
-import FilterPanel from "./FilterPanel.tsx";
 
 export default () => {
     return (
@@ -31,7 +23,7 @@ export default () => {
                     </Tabs.Tab>
                 </Tabs.List>
                 <Tabs.Panel value={'filter'}>
-                    <FilterPanel/>
+                    Coming soon!
                 </Tabs.Panel>
                 <Tabs.Panel value={'savedFilter'}>
                     Coming soon!

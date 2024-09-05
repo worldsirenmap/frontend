@@ -1,15 +1,16 @@
 import {Stack, Text} from "@mantine/core";
 import SirenCategoryBadge from "../../ui/SirenCategoryBadge.tsx";
-import {useLibraryAtom} from "../../../config/atoms.ts";
+
 import ListDetailsPanel from "../ListDetailsPanel.tsx";
 import ListItem from "../ListItem.tsx";
-import {useEffect, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import ModelDetails from "./ModelDetails.tsx";
+import {Model} from "../../../config/api.ts";
 
 
 export default () => {
-    const {models} = useLibraryAtom()
     const [selected, setSelected] = useState<number | null>(null)
+    const models: Model[] = useMemo(()=>([]),[])
 
     useEffect(() => {
         setSelected(models[0]?.id)

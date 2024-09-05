@@ -11,10 +11,11 @@ import {
     useMantineTheme
 } from "@mantine/core";
 import {IconBooks, IconFilter, IconFilterFilled, IconMapPin, IconMessage, IconWorldPin} from "@tabler/icons-react";
-import {useLoading, useMapFilterAtom, useModalAtom, useSidebarAtom} from "../../../config/atoms.ts";
+import {useLoading, useModalAtom, useSidebarAtom} from "../../../config/atoms.ts";
 import CurrentUser from "./CurrentUser.tsx";
 import SiteList from "./SiteList.tsx";
 import Filter from "./Filter.tsx";
+import {useMapFilter} from "../../../config/mapFilter.ts";
 
 
 export default () => {
@@ -22,7 +23,7 @@ export default () => {
     const {openModal} = useModalAtom()
     const {isSidebarOpen, closeSidebar} = useSidebarAtom()
     const [loading] = useLoading()
-    const {isFilterActive} = useMapFilterAtom()
+    const {isMapFilterActive} = useMapFilter()
 
     return <>
 
@@ -49,7 +50,7 @@ export default () => {
                             Nearby sirens
                         </Tabs.Tab>
                         <Tabs.Tab value="filter" leftSection={
-                            isFilterActive
+                            isMapFilterActive
                                 ? <IconFilterFilled color={theme.colors.red[6]}/>
                                 : <IconFilter/>
                         }>
