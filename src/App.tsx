@@ -13,14 +13,15 @@ import TypesModal from "./components/modals/library/LibraryModal.tsx";
 import LoginModal from "./components/modals/login/LoginModal.tsx";
 import {Notifications} from "@mantine/notifications";
 import {Ui} from "./components/ui/Ui.tsx";
-import AddSiteModal from "./components/modals/site/AddSiteModal.tsx";
 import {MapProvider} from "react-map-gl/maplibre";
 import MessagesModal from "./components/modals/messages/MessagesModal.tsx";
 import InfoModal from "./components/modals/info/InfoModal.tsx";
 import FilterModal from "./components/modals/filter/FilterModal.tsx";
 
 import {useEffect} from "react";
-import {useMapFilter} from "./config/mapFilter.ts";
+import {useMapFilter} from "./hooks/mapFilter.ts";
+import SiteModal from "./components/modals/site/SiteModal.tsx";
+import {useModalAtom} from "./config/atoms.ts";
 
 
 const theme = createTheme({
@@ -45,6 +46,7 @@ const theme = createTheme({
 
 function App() {
     const {loadFilterData} = useMapFilter()
+    const {isModalOpen} = useModalAtom()
 
     useEffect(() => {
         loadFilterData()
@@ -61,9 +63,9 @@ function App() {
                 <Ui/>
                 <TypesModal/>
                 <LoginModal/>
-                <AddSiteModal/>
                 <MessagesModal/>
                 <InfoModal/>
+                {isModalOpen('site') && <SiteModal/>}
                 <FilterModal/>
             </MapProvider>
         </MantineProvider>

@@ -55,3 +55,48 @@ export type Manufacturer = {
     id: number
     shortname: string
 }
+
+export type SiteDetails = {
+    id: number
+    latitude: number
+    longitude: number
+    country: string
+    countryCode: string
+    state: string
+    county: string | undefined
+    sirens: SirenDetails[]
+}
+
+export type SirenDetails = {
+    id: number
+    manufacturerId: number
+    manufacturer: string
+    modelId: number
+    model: string
+    category: string
+    icon: string
+    condition: string
+    description: string
+    links: string[]
+    tags: string[]
+}
+
+export type SiteNote = {
+    id: number
+    userName: string
+    userId: number
+    note: string
+    created: string
+    modified: string
+}
+
+export type SirenOptions = SirenOption[]
+
+export type SirenOption = {
+    modelId: number
+    model: string
+    manufacturerId: number
+    manufacturer: string
+    icon: string
+    category: string
+}

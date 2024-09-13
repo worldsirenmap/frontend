@@ -12,7 +12,7 @@ import Map, {
 
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {useHoveredState, useMarkerState, useViewState} from '../../config/atoms.ts';
+import {useHoveredState, useMarkerState, useModalAtom, useViewState} from '../../config/atoms.ts';
 import {
     createHoveredState,
     createLockedMarkerState,
@@ -37,7 +37,7 @@ import {
 } from './mapUtils.ts';
 import {CircleLayer, LineLayer, SymbolLayer} from "react-map-gl";
 import {MapGeoJSONFeature} from "maplibre-gl";
-import {mapFilter2JsonQuery, useMapFilter} from "../../config/mapFilter.ts";
+import {mapFilter2JsonQuery, useMapFilter} from "../../hooks/mapFilter.ts";
 
 export default () => {
     const mapRef = useRef<MapRef | null>(null)
@@ -46,6 +46,7 @@ export default () => {
     const [markerState, setMarkerState] = useMarkerState()
     const [hoveredState, setHoveredState] = useHoveredState()
     const {currentFilter} = useMapFilter()
+    const {openModal} = useModalAtom();
 
     const [popupState, setPopupState] = useState<PopupState | null>(null)
     const [localMarkerState, setLocalMarkerState] = useState<LocalMarkerState | null>(null)
@@ -105,6 +106,12 @@ export default () => {
             });
         }
     }, [markerState])
+
+    const mapOnClick = useCallback((e: MapLayerMouseEvent) => {
+        if (e.features && e.features[0] && e.features[0].source == 'sirenmap') {
+            openModal('site', {siteId: e.features[0].id as number})
+        }
+    }, [openModal])
 
     const mapOnMouseMove = useCallback((e: MapLayerMouseEvent) => {
         if (e.target.isMoving()) {
@@ -209,6 +216,7 @@ export default () => {
             onMouseDown={mapOnMouseDown}
             onMouseMove={mapOnMouseMove}
             onMouseLeave={mapOnMouseLeave}
+            onClick={mapOnClick}
             onLoad={mapOnLoad}
         >
             <NavigationControl position='top-right'/>

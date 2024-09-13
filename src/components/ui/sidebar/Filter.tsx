@@ -2,7 +2,7 @@ import {useForm} from "@mantine/form";
 import {Button, Divider, Loader, MultiSelect, Select, Stack} from "@mantine/core";
 import {useEffect, useState} from "react";
 import {axios} from "../../../config/axios.ts";
-import {emptyMapFilter, MapFilter, mapFilter2QueryString, useMapFilter} from "../../../config/mapFilter.ts";
+import {emptyMapFilter, MapFilter, mapFilter2QueryString, useMapFilter} from "../../../hooks/mapFilter.ts";
 
 
 export default () => {
@@ -59,7 +59,7 @@ export default () => {
 
     const countSirens = (values: MapFilter) => {
         setDirty(true)
-        axios.get("/public/sites/count" + mapFilter2QueryString(values))
+        axios.get("/sites/count" + mapFilter2QueryString(values))
             .then(res => setCount(res.data))
             .finally(() => setDirty(false))
     }

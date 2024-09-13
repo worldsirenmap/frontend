@@ -15,7 +15,7 @@ import {useLoading, useModalAtom, useSidebarAtom} from "../../../config/atoms.ts
 import CurrentUser from "./CurrentUser.tsx";
 import SiteList from "./SiteList.tsx";
 import Filter from "./Filter.tsx";
-import {useMapFilter} from "../../../config/mapFilter.ts";
+import {useMapFilter} from "../../../hooks/mapFilter.ts";
 
 
 export default () => {

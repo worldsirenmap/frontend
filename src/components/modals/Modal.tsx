@@ -6,11 +6,12 @@ export default ({children, name, size, title, icon: Icon}: any) => {
     const {isModalOpen, closeModal} = useModalAtom()
 
     return <MModal.Root
+        transitionProps={{duration: 100}}
         opened={isModalOpen(name)} onClose={closeModal}
         centered
         lockScroll={false}
-        closeOnClickOutside={false}
-        closeOnEscape={false}
+
+
         size={size}>
         <MModal.Overlay blur={2} backgroundOpacity={.6}/>
         <MModal.Content radius={'md'}>

@@ -2,16 +2,17 @@ import Sidebar from "./sidebar/Sidebar.tsx";
 import {ActionIcon, Box} from "@mantine/core";
 import classes from "./Ui.module.css";
 import {IconMenu2, IconPlus} from "@tabler/icons-react";
-import {useModalAtom, useSidebarAtom, useUserAtom} from "../../config/atoms.ts";
+import {useModalAtom, useSidebarAtom} from "../../config/atoms.ts";
 import {notifications} from '@mantine/notifications';
+import {useCurrentUser} from "../../hooks/currentUser.ts";
 
 export const Ui = () => {
     const {openModal} = useModalAtom()
     const {openSidebar} = useSidebarAtom()
-    const {isUserLoggedIn} = useUserAtom()
+    const {isAuthenticated} = useCurrentUser()
 
     const actionButtonClicked = () => {
-        if (isUserLoggedIn) {
+        if (isAuthenticated) {
             openModal("addSite")
         } else {
             notifications.show({

@@ -7,8 +7,8 @@ import {useHoveredState, useLoading, useMarkerState} from "../../../config/atoms
 import {NearbySite} from "../../../config/api.ts";
 import {useEffect, useRef, useState} from "react";
 import {IconMoodWrrrFilled} from "@tabler/icons-react";
-import StatusBadge from "../StatusBadge.tsx";
-import {mapFilter2QueryString, useMapFilter} from "../../../config/mapFilter.ts";
+import StatusBadge from "../SirenStatusBadge.tsx";
+import {mapFilter2QueryString, useMapFilter} from "../../../hooks/mapFilter.ts";
 
 
 export default () => {
@@ -21,7 +21,7 @@ export default () => {
     const [_, setLoading] = useLoading()
 
     const [{data, error, loading}] = useAxios<NearbySite[]>({
-        url: "/public/sites/nearby" + mapFilter2QueryString(currentFilter),
+        url: "/sites/nearby" + mapFilter2QueryString(currentFilter),
         params: {
             longitude: markerState.longitude,
             latitude: markerState.latitude,

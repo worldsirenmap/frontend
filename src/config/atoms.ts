@@ -1,38 +1,29 @@
 import {atom, useAtom} from 'jotai'
 import {atomWithStorage, createJSONStorage} from 'jotai/utils'
 import {ViewState} from "react-map-gl/src/types/common.ts";
-import {useEffect} from "react";
-import {axios} from "./axios.ts";
-
-const currentUserAtom = atomWithStorage("currentUser", {
-    authenticated: false,
-    username: null
-})
-export const useUserAtom = () => {
-    const [currentUser, setCurrentUser] = useAtom(currentUserAtom)
-    return {
-        username: currentUser.username,
-        isUserLoggedIn: currentUser.authenticated,
-        setUserLoggedIn: (user: any) => setCurrentUser({
-            username: user.username,
-            authenticated: true
-        }),
-        setUserLoggedOut: () => setCurrentUser({
-            username: null,
-            authenticated: false
-        })
-    }
-}
-// ---------- MapFilter ----------
 
 // ---------- ShowModalAtom ----------
-const showModalAtom = atom("")
+type SiteModalParams = {
+    siteId: number
+}
+
+type ModalParams = SiteModalParams | null
+
+type ModalData = {
+    name: string,
+    params: ModalParams
+}
+const modalDataAtom = atom<ModalData>({
+    name: "",
+    params: null
+})
 export const useModalAtom = () => {
-    const [showModal, setShowModal] = useAtom(showModalAtom)
+    const [modalData, setModalData] = useAtom(modalDataAtom)
     return {
-        isModalOpen: (name: string) => showModal == name,
-        openModal: (name: string) => setShowModal(name),
-        closeModal: () => setShowModal("")
+        isModalOpen: (name: string) => modalData.name == name,
+        openModal: (name: string, params?: ModalParams) => setModalData({name, params: params ?? null}),
+        closeModal: () => setModalData({name: "", params: null}),
+        modalParams: modalData.params
     }
 }
 

@@ -1,11 +1,12 @@
 import {Anchor, Avatar, Group, Stack, Text} from "@mantine/core";
-import {useUserAtom, useModalAtom} from "../../../config/atoms.ts";
+import {useModalAtom} from "../../../config/atoms.ts";
 import {notifications} from '@mantine/notifications';
 import {useLogoutApi} from "../../../config/api.ts";
+import {useCurrentUser} from "../../../hooks/currentUser.ts";
 
 const Authenticated = () => {
     const {logoutPending, callLogout} = useLogoutApi()
-    const {username, setUserLoggedOut} = useUserAtom()
+    const {userName, logoutUser} = useCurrentUser()
 
 
     const doLogout = () => {
@@ -17,14 +18,14 @@ const Authenticated = () => {
                 color: "green",
                 autoClose: 5000,
             })
-            setUserLoggedOut()
+            logoutUser()
         })
     }
     return (
         <Group>
             <Avatar color={'wsm'} size={56} src={'http://localhost:8080/user/avatar'}/>
             <Stack gap={0} align={'flex-start'}>
-                <Text fw={'bold'} lh={'xs'}>{username}</Text>
+                <Text fw={'bold'} lh={'xs'}>{userName}</Text>
                 <Group>
                     <Anchor size={'sm'} component={'button'}>Profile</Anchor>
                     <Anchor
@@ -56,7 +57,7 @@ const Anonymous = () => {
 }
 
 export default () => {
-    const {isUserLoggedIn} = useUserAtom()
+    const {isAuthenticated} = useCurrentUser()
 
-    return isUserLoggedIn ? <Authenticated/> : <Anonymous/>
+    return isAuthenticated ? <Authenticated/> : <Anonymous/>
 }

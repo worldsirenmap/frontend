@@ -1,13 +1,14 @@
 import {Button, PasswordInput, Stack, TextInput} from "@mantine/core";
-import {useUserAtom, useModalAtom} from "../../../config/atoms.ts";
+import {useModalAtom} from "../../../config/atoms.ts";
 import {useForm} from "@mantine/form";
 import {notifications} from '@mantine/notifications';
 import Modal from "../Modal.tsx";
 import {useLoginApi} from "../../../config/api.ts";
 import {IconLogin} from "@tabler/icons-react";
+import {useCurrentUser} from "../../../hooks/currentUser.ts";
 
 export default () => {
-    const {setUserLoggedIn, setUserLoggedOut} = useUserAtom()
+    const {loginUser, logoutUser} = useCurrentUser()
     const {closeModal} = useModalAtom()
     const {loginPending, callLogin} = useLoginApi()
 
@@ -31,7 +32,7 @@ export default () => {
                     autoClose: 5000,
                 })
                 loginForm.reset()
-                setUserLoggedIn(user)
+                loginUser(user)
                 closeModal()
             })
             .catch(error => {
@@ -46,7 +47,7 @@ export default () => {
                         })
                     }
                 }
-                setUserLoggedOut()
+                logoutUser()
             })
     }
 

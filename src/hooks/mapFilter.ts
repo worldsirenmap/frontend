@@ -1,6 +1,6 @@
 import {atom, useAtom} from "jotai/index";
 import {atomWithStorage, createJSONStorage} from "jotai/utils";
-import {axios} from "./axios.ts";
+import {axios} from "../config/axios.ts";
 import {useState} from "react";
 
 export type MapFilter = {
@@ -55,7 +55,7 @@ export const useMapFilter = () => {
 
     const loadStateData = (ctr: string) => {
         setStaLoading(true)
-        axios.get(`/public/filterdata/country/${ctr}/states`).then(res => {
+        axios.get(`/filterdata/country/${ctr}/states`).then(res => {
             setStaLoading(false)
             setStaData(objectToData(res.data))
         })
@@ -63,7 +63,7 @@ export const useMapFilter = () => {
 
     const loadCountyData = (ctr: string, sta: string) => {
         setCtyLoading(true)
-        axios.get(`/public/filterdata/country/${ctr}/state/${sta}/counties`).then(res => {
+        axios.get(`/filterdata/country/${ctr}/state/${sta}/counties`).then(res => {
             setCtyLoading(false)
             setCtyData(objectToData(res.data))
         })
@@ -73,12 +73,12 @@ export const useMapFilter = () => {
         statesLoading,
         countiesLoading,
         loadFilterData: () => {
-            axios.get("/public/filterdata/tags").then(res => setTagData(res.data))
-            axios.get("/public/filterdata/models").then(res => setModData(objectToData(res.data)))
-            axios.get("/public/filterdata/manufacturers").then(res => setManData(objectToData(res.data)))
-            axios.get("/public/filterdata/categories").then(res => setCatData(objectToData(res.data)))
-            axios.get("/public/filterdata/conditions").then(res => setConData(objectToData(res.data)))
-            axios.get("/public/filterdata/countries").then(res => setCtrData(objectToData(res.data)))
+            axios.get("/filterdata/tags").then(res => setTagData(res.data))
+            axios.get("/filterdata/models").then(res => setModData(objectToData(res.data)))
+            axios.get("/filterdata/manufacturers").then(res => setManData(objectToData(res.data)))
+            axios.get("/filterdata/categories").then(res => setCatData(objectToData(res.data)))
+            axios.get("/filterdata/conditions").then(res => setConData(objectToData(res.data)))
+            axios.get("/filterdata/countries").then(res => setCtrData(objectToData(res.data)))
             if (currentFilter.ctr) {
                 loadStateData(currentFilter.ctr)
                 if (currentFilter.sta) {
