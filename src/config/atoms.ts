@@ -2,31 +2,6 @@ import {atom, useAtom} from 'jotai'
 import {atomWithStorage, createJSONStorage} from 'jotai/utils'
 import {ViewState} from "react-map-gl/src/types/common.ts";
 
-// ---------- ShowModalAtom ----------
-type SiteModalParams = {
-    siteId: number
-}
-
-type ModalParams = SiteModalParams | null
-
-type ModalData = {
-    name: string,
-    params: ModalParams
-}
-const modalDataAtom = atom<ModalData>({
-    name: "",
-    params: null
-})
-export const useModalAtom = () => {
-    const [modalData, setModalData] = useAtom(modalDataAtom)
-    return {
-        isModalOpen: (name: string) => modalData.name == name,
-        openModal: (name: string, params?: ModalParams) => setModalData({name, params: params ?? null}),
-        closeModal: () => setModalData({name: "", params: null}),
-        modalParams: modalData.params
-    }
-}
-
 // ---------- SideBarState ----------
 const showSidebarAtom = atomWithStorage<boolean>('sidebarState', false, createJSONStorage(), {getOnInit: true})
 export const useSidebarAtom = () => {
@@ -74,7 +49,3 @@ export type HoveredState = {
 }
 const hoveredStateAtom = atom<HoveredState | null>(null)
 export const useHoveredState = () => useAtom(hoveredStateAtom)
-
-// ---------- Loading ----------
-const loadingAtom = atom<boolean>(false)
-export const useLoading = () => useAtom(loadingAtom)

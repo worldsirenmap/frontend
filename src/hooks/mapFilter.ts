@@ -3,6 +3,9 @@ import {atomWithStorage, createJSONStorage} from "jotai/utils";
 import {axios} from "../config/axios.ts";
 import {useState} from "react";
 
+import {AxiosRequestConfig} from "axios";
+import {useTranslation} from "./translation.ts";
+
 export type MapFilter = {
     tag: string[]
     mod: number[]
@@ -41,6 +44,7 @@ const filterDataCtyAtom = atom<FilterItem[]>([])
 const currentFilterAtom = atomWithStorage<MapFilter>('mapFilter', emptyMapFilter, createJSONStorage(), {getOnInit: true})
 
 export const useMapFilter = () => {
+    const {i18n} = useTranslation()
     const [tagData, setTagData] = useAtom(filterDataTagAtom)
     const [modData, setModData] = useAtom(filterDataModAtom)
     const [manData, setManData] = useAtom(filterDataManAtom)
@@ -53,9 +57,15 @@ export const useMapFilter = () => {
     const [statesLoading, setStaLoading] = useState<boolean>(false)
     const [countiesLoading, setCtyLoading] = useState<boolean>(false)
 
+    const fetchOptions: AxiosRequestConfig = {
+        headers: {
+            "Accept-Language": i18n.language
+        }
+    }
+
     const loadStateData = (ctr: string) => {
         setStaLoading(true)
-        axios.get(`/filterdata/country/${ctr}/states`).then(res => {
+        axios.get(`/filterdata/country/${ctr}/states`, fetchOptions).then(res => {
             setStaLoading(false)
             setStaData(objectToData(res.data))
         })
@@ -73,12 +83,12 @@ export const useMapFilter = () => {
         statesLoading,
         countiesLoading,
         loadFilterData: () => {
-            axios.get("/filterdata/tags").then(res => setTagData(res.data))
-            axios.get("/filterdata/models").then(res => setModData(objectToData(res.data)))
-            axios.get("/filterdata/manufacturers").then(res => setManData(objectToData(res.data)))
-            axios.get("/filterdata/categories").then(res => setCatData(objectToData(res.data)))
-            axios.get("/filterdata/conditions").then(res => setConData(objectToData(res.data)))
-            axios.get("/filterdata/countries").then(res => setCtrData(objectToData(res.data)))
+            axios.get("/filterdata/tags", fetchOptions).then(res => setTagData(res.data))
+            axios.get("/filterdata/models", fetchOptions).then(res => setModData(objectToData(res.data)))
+            axios.get("/filterdata/manufacturers", fetchOptions).then(res => setManData(objectToData(res.data)))
+            axios.get("/filterdata/categories", fetchOptions).then(res => setCatData(objectToData(res.data)))
+            axios.get("/filterdata/conditions", fetchOptions).then(res => setConData(objectToData(res.data)))
+            axios.get("/filterdata/countries", fetchOptions).then(res => setCtrData(objectToData(res.data)))
             if (currentFilter.ctr) {
                 loadStateData(currentFilter.ctr)
                 if (currentFilter.sta) {
@@ -136,3 +146,4 @@ export const mapFilter2QueryString = (mapFilter: MapFilter): string => {
 
     return urlParams.length == 0 ? "" : "?" + urlParams.join('&')
 }
+

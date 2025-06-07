@@ -3,26 +3,32 @@ import {createTheme, MantineProvider} from '@mantine/core';
 import '@mantine/core/styles.css';
 import '@mantine/notifications/styles.css';
 
-import './App.css'
-
 import './config/i18n.ts'
 import './config/axios.ts'
 
-import MapView from "./components/map/MapView.tsx";
-import TypesModal from "./components/modals/library/LibraryModal.tsx";
-import LoginModal from "./components/modals/login/LoginModal.tsx";
+import MapView from "./map/MapView.tsx";
+import LibraryModal from "./modals/library/LibraryModal.tsx";
+import LoginModal from "./modals/user/LoginModal.tsx";
 import {Notifications} from "@mantine/notifications";
-import {Ui} from "./components/ui/Ui.tsx";
+import {MapUi} from "./map/MapUi.tsx";
 import {MapProvider} from "react-map-gl/maplibre";
-import MessagesModal from "./components/modals/messages/MessagesModal.tsx";
-import InfoModal from "./components/modals/info/InfoModal.tsx";
-import FilterModal from "./components/modals/filter/FilterModal.tsx";
+import ActivitiesModal from "./modals/activities/ActivitiesModal.tsx";
+import InfoModal from "./modals/info/InfoModal.tsx";
+import FilterModal from "./modals/filter/FilterModal.tsx";
 
 import {useEffect} from "react";
 import {useMapFilter} from "./hooks/mapFilter.ts";
-import SiteModal from "./components/modals/site/SiteModal.tsx";
-import {useModalAtom} from "./config/atoms.ts";
+import SiteModal from "./modals/site/SiteModal.tsx";
+import {useRouter} from "./hooks/navigation.ts";
+import HelpModal from "./modals/help/HelpModal.tsx";
+import ProfileModal from "./modals/user/ProfileModal.tsx";
+import RegisterModal from "./modals/user/RegisterModal.tsx";
+import PasswordResetModal from "./modals/user/PasswordResetModal.tsx";
+import ActivateModal from "./modals/user/ActivateModal.tsx";
+import StatisticsModal from "./modals/statistics/StatisticsModal.tsx";
+import AddSiteModal from "./modals/site/AddSiteModal.tsx";
 
+import '@mantine/charts/styles.css';
 
 const theme = createTheme({
     colors: {
@@ -46,7 +52,7 @@ const theme = createTheme({
 
 function App() {
     const {loadFilterData} = useMapFilter()
-    const {isModalOpen} = useModalAtom()
+    const pathMatches = useRouter()
 
     useEffect(() => {
         loadFilterData()
@@ -60,13 +66,22 @@ function App() {
             <Notifications position={"top-center"}/>
             <MapProvider>
                 <MapView/>
-                <Ui/>
-                <TypesModal/>
-                <LoginModal/>
-                <MessagesModal/>
-                <InfoModal/>
-                {isModalOpen('site') && <SiteModal/>}
-                <FilterModal/>
+                <MapUi/>
+                {pathMatches("filter") && <FilterModal/>}
+                {pathMatches("library") && <LibraryModal/>}
+                {pathMatches("activities") && <ActivitiesModal/>}
+                {pathMatches("info") && <InfoModal/>}
+                {pathMatches("help") && <HelpModal/>}
+
+                {pathMatches("login") && <LoginModal/>}
+                {pathMatches("register") && <RegisterModal/>}
+                {pathMatches("passwordreset") && <PasswordResetModal/>}
+                {pathMatches("activate", /^[0-9a-fA-F-]{36}$/) && <ActivateModal/>}
+                {pathMatches("profile") && <ProfileModal/>}
+                {pathMatches("settings") && <ProfileModal/>}
+                {pathMatches("site", /^\d+$/) && <SiteModal/>}
+                {pathMatches("statistics", false) && <StatisticsModal/>}
+                {pathMatches("addsite") && <AddSiteModal/>}
             </MapProvider>
         </MantineProvider>
     )

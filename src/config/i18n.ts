@@ -1,29 +1,24 @@
 import i18n from 'i18next'
-import { initReactI18next } from 'react-i18next'
+import Backend, {HttpBackendOptions} from 'i18next-http-backend';
+import {initReactI18next} from 'react-i18next'
 import LanguageDetector from 'i18next-browser-languagedetector'
 
-await i18n
+i18n
     .use(LanguageDetector)
+    .use(Backend)
     .use(initReactI18next)
-    .init({
+    .init<HttpBackendOptions>({
         fallbackLng: 'en',
+        supportedLngs: ['de', 'en'],
+        ns: ['wsm'],
+        defaultNS: 'wsm',
         interpolation: {
             escapeValue: false, // not needed for react as it escapes by default
         },
-        resources: {
-            en: {
-                header: {
-                    btn_types: 'Siren library',
-                    btn_manufacturers: 'Siren manufacturers',
-                    btn_addsite: 'Add siren site',
-                }
-            },
-            de: {
-                header: {
-                    btn_types: 'Sirenentypen',
-                    btn_manufacturers: 'Hersteller',
-                    btn_addsite: 'Standort hinzufügen',
-                }
-            }
+
+        // Backend
+        load: 'languageOnly',
+        backend: {
+            loadPath: import.meta.env.VITE_WSM_SERVER_URL + "/assets/translations/{{lng}}/{{ns}}.json"
         }
     });
